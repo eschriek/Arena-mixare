@@ -35,6 +35,7 @@ public class OfflineCapableImageMarker extends ImageMarker{
 			Service service = ArenaProcessorService.getInstance();
 			Intent dialogIntent = new Intent(service.getBaseContext(), ItemViewActivity.class);
 			dialogIntent.putExtra("url", getURL());
+			System.out.println("URL : " + getURL());
 			dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			service.getApplication().startActivity(dialogIntent);	
 		}

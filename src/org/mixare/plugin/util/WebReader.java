@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.mixare.lib.HtmlUnescape;
+
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -38,7 +40,10 @@ public class WebReader {
 		}
 	}
 	
+	
 	public void readWebPageToString() throws IOException {
+		url = HtmlUnescape.unescapeUnicode(url);
+		Log.i(TAG, url);
 		URL u = new URL(url);
 		InputStream in = new BufferedInputStream(u.openStream());
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
