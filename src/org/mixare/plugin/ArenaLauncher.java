@@ -46,8 +46,10 @@ public class ArenaLauncher extends Activity {
 		if (isMixareInstalled) {
 			// start mixare
 			Intent i = new Intent("android.intent.category.LAUNCHER");
-			i.setClassName("org.mixare", "org.mixare.PluginLoaderActivity");
-			startActivity(i);
+			i.putExtra("arenaLoad", 80);
+			i.setClassName("org.mixare", "org.mixare.MainActivity");
+			//startActivity(i);
+			startActivityForResult(i, 80);
 
 		} else {
 			// Mixare is not installed, let's go to the market!
