@@ -2,7 +2,6 @@ package org.mixare.plugin;
 
 import java.io.IOException;
 
-import org.mixare.lib.HtmlUnescape;
 import org.mixare.plugin.util.OfflineConverter;
 
 import android.app.Activity;

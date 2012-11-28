@@ -13,6 +13,7 @@ import org.mixare.lib.render.Camera;
 import org.mixare.lib.render.MixVector;
 import org.mixare.lib.service.IMarkerService;
 import org.mixare.plugin.ImageMarker;
+import org.mixare.plugin.Obj3DMarker;
 import org.mixare.plugin.OfflineCapableImageMarker;
 
 import android.app.Service;
@@ -20,6 +21,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class ImageMarkerService extends Service{
 	
@@ -42,15 +44,18 @@ public class ImageMarkerService extends Service{
 		}
 
 		@Override
-		public String buildMarker(int id, String title, double latitude, double longitude, double altitude, String url, int type, int color)
+		public String buildMarker(int id, String title, double latitude, double longitude, double altitude, String url, int type, int color, String markerType)
 				throws RemoteException {
 			PluginMarker marker;
-			if (useOffline){
-				//used OfflineCapableImageMarker instead of the normal imagemarker
+			Log.i("Mixare", "" + markerType);
+			if(markerType.equalsIgnoreCase("object3d")){
+				marker = new Obj3DMarker(id, title, latitude, longitude, altitude, url, type, color);
+			} else if (markerType.equalsIgnoreCase("image") && useOffline) {
 				marker = new OfflineCapableImageMarker(id, title, latitude, longitude, altitude, url, type, color);
-			}else{
+			} else {
 				marker = new ImageMarker(id, title, latitude, longitude, altitude, url, type, color);
-			}			
+			}
+			
 			String markerName = PLUGIN_NAME + "-"+(++count)+"-"+marker.getID();
 			markers.put(markerName, marker);
 			return markerName;

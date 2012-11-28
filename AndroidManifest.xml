@@ -64,6 +64,7 @@
          <activity android:name=".ItemViewActivity" android:exported="true" android:theme="@style/Theme.Transparent"></activity>
          <activity android:name=".OfflineDownloadActivity"></activity>
          <activity android:name=".SendAnswersOnlineActivity"></activity>
+
          
     </application>
 
