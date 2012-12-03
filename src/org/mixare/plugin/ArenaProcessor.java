@@ -69,15 +69,31 @@ public class ArenaProcessor extends PluginDataProcessor {
 				if (type.equalsIgnoreCase("object3d")) {
 					Model3D model = new Model3D();
 
+					String blended = jo.getString("blended");
+					String schaal = jo.getString("schaal");
+					String rotatieX = jo.getString("rotX");
+					String rotatieY = jo.getString("rotY");
+					String rotatieZ = jo.getString("rotZ");
+
+					System.out.println(blended + " " + schaal + " " + rotatieX
+							+ " " + rotatieY + " " + rotatieZ);
+
 					String modelLink = HtmlUnescape.unescapeUnicode(jo
 							.getString("object_url"));
 
 					String cacheUrl = getObjectFile(modelLink,
 							jo.getString("title"));
+
 					if (cacheUrl != null) {
 						model.setObj(cacheUrl);
 					}
-
+					
+					model.setBlended(Integer.valueOf(blended));
+					model.setRot_x(Integer.valueOf(rotatieX));
+					model.setRot_y(Integer.valueOf(rotatieY));
+					model.setRot_z(Integer.valueOf(rotatieZ));
+					model.setSchaal(Integer.valueOf(schaal));
+					
 					ma.setMarkerName(MARKER_NAME);
 					ma.setExtras("obj", new ParcelableProperty(
 							"org.mixare.lib.gui.Model3D", model));
@@ -89,7 +105,7 @@ public class ArenaProcessor extends PluginDataProcessor {
 					ma.setExtras("bitmap", new ParcelableProperty(
 							"android.graphics.Bitmap", image));
 				}
-	
+
 				if (jo.has("radius")) { // for offline
 					ma.setExtras("radius", jo.getDouble("radius"));
 				}
