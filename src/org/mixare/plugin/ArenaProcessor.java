@@ -75,9 +75,6 @@ public class ArenaProcessor extends PluginDataProcessor {
 					String rotatieY = jo.getString("rotY");
 					String rotatieZ = jo.getString("rotZ");
 
-					System.out.println(blended + " " + schaal + " " + rotatieX
-							+ " " + rotatieY + " " + rotatieZ);
-
 					String modelLink = HtmlUnescape.unescapeUnicode(jo
 							.getString("object_url"));
 
@@ -88,11 +85,11 @@ public class ArenaProcessor extends PluginDataProcessor {
 						model.setObj(cacheUrl);
 					}
 					
+					model.setRot_x(Float.valueOf(rotatieX));
+					model.setRot_y(Float.valueOf(rotatieY));
+					model.setRot_z(Float.valueOf(rotatieZ));
+					model.setSchaal(Float.valueOf(schaal));
 					model.setBlended(Integer.valueOf(blended));
-					model.setRot_x(Integer.valueOf(rotatieX));
-					model.setRot_y(Integer.valueOf(rotatieY));
-					model.setRot_z(Integer.valueOf(rotatieZ));
-					model.setSchaal(Integer.valueOf(schaal));
 					
 					ma.setMarkerName(MARKER_NAME);
 					ma.setExtras("obj", new ParcelableProperty(

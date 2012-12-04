@@ -205,6 +205,16 @@ public class ImageMarkerService extends Service{
 			markers.get(markerName).setExtras(name, value);
 			
 		}
+
+		@Override
+		public double getBearing(String name) throws RemoteException {
+			return markers.get(name).getBearing();
+		}
+
+		@Override
+		public void setBearing(String name, double bearing) throws RemoteException {
+			markers.get(name).setBearing(bearing);
+		}
     };
 
 }

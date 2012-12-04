@@ -36,6 +36,10 @@ public class Obj3DMarker extends PluginMarker {
 	@Override
 	public DrawCommand[] remoteDraw() {
 		DrawCommand[] dCommands = new DrawCommand[2];
+
+		model.setDistance(distance);
+		model.setBearing(bearing);
+
 		dCommands[0] = new DrawObj(isVisible, signMarker, model);
 		dCommands[1] = new DrawTextBox(isVisible, distance, title, underline,
 				textBlock, txtLab, signMarker);
