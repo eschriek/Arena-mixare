@@ -23,10 +23,10 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class ImageMarkerService extends Service{
-	
+public class ImageMarkerService extends Service {
+
 	public static final String PLUGIN_NAME = "imagemarker";
-	public static final String CATEGORY_PLUGIN= "mixare.intent.category.MARKER_PLUGIN";
+	public static final String CATEGORY_PLUGIN = "mixare.intent.category.MARKER_PLUGIN";
 	public static boolean useOffline = false;
 	private Map<String, PluginMarker> markers = new HashMap<String, PluginMarker>();
 	private Integer count = 0;
@@ -36,7 +36,12 @@ public class ImageMarkerService extends Service{
 		return binder;
 	}
 
-    private final IMarkerService.Stub binder = new IMarkerService.Stub() {
+	@Override
+	public void onDestroy() {
+		Log.i(PLUGIN_NAME, "O jee");
+	}
+
+	private final IMarkerService.Stub binder = new IMarkerService.Stub() {
 
 		@Override
 		public int getPid() throws RemoteException {
@@ -44,19 +49,28 @@ public class ImageMarkerService extends Service{
 		}
 
 		@Override
-		public String buildMarker(int id, String title, double latitude, double longitude, double altitude, String url, int type, int color, String markerType)
-				throws RemoteException {
+		public String buildMarker(int id, String title, double latitude,
+				double longitude, double altitude, String url, int type,
+				int color, String markerType) throws RemoteException {
 			PluginMarker marker;
 			Log.i("Mixare", "" + markerType);
-			if(markerType.equalsIgnoreCase("object3d")){
-				marker = new Obj3DMarker(id, title, latitude, longitude, altitude, url, type, color);
+			if (markerType.equalsIgnoreCase("object3d")) {
+				marker = new Obj3DMarker(id, title, latitude, longitude,
+						altitude, url, type, color);
+			} else if (markerType.equalsIgnoreCase("question")) {
+				marker = new Obj3DMarker(id, title, latitude, longitude,
+						altitude, url, type, color);
 			} else if (markerType.equalsIgnoreCase("image") && useOffline) {
-				marker = new OfflineCapableImageMarker(id, title, latitude, longitude, altitude, url, type, color);
+
+				marker = new OfflineCapableImageMarker(id, title, latitude,
+						longitude, altitude, url, type, color);
 			} else {
-				marker = new ImageMarker(id, title, latitude, longitude, altitude, url, type, color);
+				marker = new ImageMarker(id, title, latitude, longitude,
+						altitude, url, type, color);
 			}
-			
-			String markerName = PLUGIN_NAME + "-"+(++count)+"-"+marker.getID();
+
+			String markerName = PLUGIN_NAME + "-" + (++count) + "-"
+					+ marker.getID();
 			markers.put(markerName, marker);
 			return markerName;
 		}
@@ -67,13 +81,14 @@ public class ImageMarkerService extends Service{
 		}
 
 		@Override
-		public void calcPaint(String markerName, Camera viewCam, float addX, float addY)
-				throws RemoteException {
-			markers.get(markerName).calcPaint(viewCam, addX, addY);			
+		public void calcPaint(String markerName, Camera viewCam, float addX,
+				float addY) throws RemoteException {
+			markers.get(markerName).calcPaint(viewCam, addX, addY);
 		}
 
 		@Override
-		public DrawCommand[] remoteDraw(String markerName) throws RemoteException {
+		public DrawCommand[] remoteDraw(String markerName)
+				throws RemoteException {
 			return markers.get(markerName).remoteDraw();
 		}
 
@@ -103,7 +118,8 @@ public class ImageMarkerService extends Service{
 		}
 
 		@Override
-		public MixVector getLocationVector(String markerName) throws RemoteException {
+		public MixVector getLocationVector(String markerName)
+				throws RemoteException {
 			return markers.get(markerName).getLocationVector();
 		}
 
@@ -121,7 +137,7 @@ public class ImageMarkerService extends Service{
 		public String getTitle(String markerName) throws RemoteException {
 			return markers.get(markerName).getTitle();
 		}
-		
+
 		@Override
 		public String getURL(String markerName) throws RemoteException {
 			return markers.get(markerName).getURL();
@@ -133,12 +149,14 @@ public class ImageMarkerService extends Service{
 		}
 
 		@Override
-		public void setActive(String markerName, boolean active) throws RemoteException {
+		public void setActive(String markerName, boolean active)
+				throws RemoteException {
 			markers.get(markerName).setActive(active);
 		}
 
 		@Override
-		public void setDistance(String markerName, double distance) throws RemoteException {
+		public void setDistance(String markerName, double distance)
+				throws RemoteException {
 			markers.get(markerName).setDistance(distance);
 		}
 
@@ -148,28 +166,29 @@ public class ImageMarkerService extends Service{
 		}
 
 		@Override
-		public void update(String markerName, Location curGPSFix) throws RemoteException {
+		public void update(String markerName, Location curGPSFix)
+				throws RemoteException {
 			markers.get(markerName).update(curGPSFix);
 		}
 
 		@Override
 		public void removeMarker(String markerName) throws RemoteException {
-			markers.remove(markerName);			
+			markers.remove(markerName);
 		}
 
 		@Override
-		public ClickHandler fClick(String markerName)
-				throws RemoteException {
+		public ClickHandler fClick(String markerName) throws RemoteException {
 			return markers.get(markerName).fClick();
 		}
-		
+
 		@Override
 		public MixVector getCMarker(String markerName) throws RemoteException {
 			return markers.get(markerName).getCMarker();
 		}
 
 		@Override
-		public MixVector getSignMarker(String markerName) throws RemoteException {
+		public MixVector getSignMarker(String markerName)
+				throws RemoteException {
 			return markers.get(markerName).getSignMarker();
 		}
 
@@ -182,12 +201,13 @@ public class ImageMarkerService extends Service{
 		public boolean isVisible(String markerName) throws RemoteException {
 			return markers.get(markerName).isVisible();
 		}
-		
+
 		@Override
-		public void setTxtLab(String markerName, Label txtLab) throws RemoteException {
+		public void setTxtLab(String markerName, Label txtLab)
+				throws RemoteException {
 			markers.get(markerName).setTxtLab(txtLab);
 		}
-		
+
 		@Override
 		public Label getTxtLab(String markerName) throws RemoteException {
 			return markers.get(markerName).getTxtLab();
@@ -203,7 +223,7 @@ public class ImageMarkerService extends Service{
 		public void setExtrasPrim(String markerName, String name,
 				PrimitiveProperty value) throws RemoteException {
 			markers.get(markerName).setExtras(name, value);
-			
+
 		}
 
 		@Override
@@ -212,9 +232,10 @@ public class ImageMarkerService extends Service{
 		}
 
 		@Override
-		public void setBearing(String name, double bearing) throws RemoteException {
+		public void setBearing(String name, double bearing)
+				throws RemoteException {
 			markers.get(name).setBearing(bearing);
 		}
-    };
+	};
 
 }

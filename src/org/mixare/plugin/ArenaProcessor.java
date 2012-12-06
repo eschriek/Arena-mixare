@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import org.mixare.lib.data.PluginDataProcessor;
 import org.mixare.lib.gui.Model3D;
 import org.mixare.lib.marker.InitialMarkerData;
 import org.mixare.lib.marker.draw.ParcelableProperty;
+import org.mixare.lib.model3d.Color;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -67,33 +70,22 @@ public class ArenaProcessor extends PluginDataProcessor {
 						jo.getDouble("elevation"), link, taskId, colour, type);
 
 				if (type.equalsIgnoreCase("object3d")) {
-					Model3D model = new Model3D();
 
-					String blended = jo.getString("blended");
-					String schaal = jo.getString("schaal");
-					String rotatieX = jo.getString("rotX");
-					String rotatieY = jo.getString("rotY");
-					String rotatieZ = jo.getString("rotZ");
-
-					String modelLink = HtmlUnescape.unescapeUnicode(jo
-							.getString("object_url"));
-
-					String cacheUrl = getObjectFile(modelLink,
-							jo.getString("title"));
-
-					if (cacheUrl != null) {
-						model.setObj(cacheUrl);
+					Model3D model = loadFromUrl(jo, type);
+					if (model != null) {
+						ma.setMarkerName(MARKER_NAME);
+						ma.setExtras("obj", new ParcelableProperty(
+								"org.mixare.lib.gui.Model3D", model));
 					}
-					
-					model.setRot_x(Float.valueOf(rotatieX));
-					model.setRot_y(Float.valueOf(rotatieY));
-					model.setRot_z(Float.valueOf(rotatieZ));
-					model.setSchaal(Float.valueOf(schaal));
-					model.setBlended(Integer.valueOf(blended));
-					
-					ma.setMarkerName(MARKER_NAME);
-					ma.setExtras("obj", new ParcelableProperty(
-							"org.mixare.lib.gui.Model3D", model));
+
+				} else if (type.equalsIgnoreCase("question")) {
+
+					Model3D model = loadFromUrl(jo, type);
+					if (model != null) {
+						ma.setMarkerName(MARKER_NAME);
+						ma.setExtras("obj", new ParcelableProperty(
+								"org.mixare.lib.gui.Model3D", model));
+					}
 
 				} else {
 					Bitmap image = getBitmapFromURL(jo.getString("object_url"));
@@ -113,10 +105,87 @@ public class ArenaProcessor extends PluginDataProcessor {
 		return initialMarkerDatas;
 	}
 
-	public String getObjectFile(String src, String title) {
+	private Model3D loadFromUrl(JSONObject jo, String type) {
+		try {
+			String modelLink = HtmlUnescape.unescapeUnicode(jo
+					.getString("object_url"));
+			if (type.equalsIgnoreCase("question")) {
+				Model3D model = new Model3D();
+
+				String vraagteken3D = getDomainName(modelLink)
+						+ "/arena-server/models/models/vrg4.obj";
+
+				String cacheUrl = getObjectFile(vraagteken3D,
+						jo.getString("title"));
+
+				if (cacheUrl != null) {
+					model.setObj(cacheUrl);
+				}
+
+				if (modelLink.endsWith("blue-question.png")) {
+					model.setColor(Color.QUESTION_BLUE);
+				} else if (modelLink.endsWith("green-question.png")) {
+					model.setColor(Color.QUESTION_GREEN);
+				} else if (modelLink.endsWith("red-question.png")) {
+					model.setColor(Color.QUESTION_RED);
+				} else if (modelLink.endsWith("too-far.png")) {
+					model.setColor(Color.TO_FAR);
+				}
+
+				model.setBlended(0);
+
+				return model;
+			} else if (type.equalsIgnoreCase("object3d")) {
+				Model3D model = new Model3D();
+
+				String cacheUrl = getObjectFile(modelLink,
+						jo.getString("title"));
+
+				if (cacheUrl != null) {
+					model.setObj(cacheUrl);
+				}
+
+				model.setRot_x(Float.valueOf(jo.getString("rotX")));
+				model.setRot_y(Float.valueOf(jo.getString("rotY")));
+				model.setRot_z(Float.valueOf(jo.getString("rotZ")));
+				model.setSchaal(Float.valueOf(jo.getString("schaal")));
+				model.setBlended(Integer.valueOf(jo.getString("blended")));
+
+				return model;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private static String getFileExtension(String file) {
+		String fileName = file;
+		if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+			return fileName.substring(fileName.lastIndexOf(".") + 1);
+		else
+			return "";
+	}
+
+	private static String getDomainName(String url) {
+		URI uri = null;
+		try {
+			uri = new URI(url);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		String domain = uri.getHost();
+		return "http://" + domain;
+	}
+
+	private String getObjectFile(String src, String title) {
 		try {
 			String fileName = Environment.getExternalStorageDirectory()
-					.getPath() + "/model-" + title + ".txt";
+					.getPath()
+					+ "/model-"
+					+ title
+					+ "."
+					+ getFileExtension(src);
 			URL url = new URL(src);
 			File file = new File(fileName);
 

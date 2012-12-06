@@ -14,6 +14,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class ArenaProcessorService extends Service{
 
@@ -22,6 +23,12 @@ public class ArenaProcessorService extends Service{
 	private static ArenaProcessorService instance;
 	private Integer count = 0;
 	
+	
+	@Override
+	public void onDestroy() {
+		Log.i(PLUGIN_NAME, "O jee2");
+	}
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		instance = this;
